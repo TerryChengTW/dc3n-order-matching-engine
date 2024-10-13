@@ -15,7 +15,7 @@ public class KafkaErrorHandlerConfig {
     public DefaultErrorHandler errorHandler() {
         // 自定義錯誤處理，僅打印簡單消息
         BiConsumer<ConsumerRecord<?, ?>, Exception> recoverer = (record, ex) -> {
-            System.out.println("Error processing record: " + record.value() + ", Error: " + ex.getMessage());
+//            System.out.println("Error processing record: " + record.value() + ", Error: " + ex.getMessage());
         };
 
         // 使用 FixedBackOff，表示不重試

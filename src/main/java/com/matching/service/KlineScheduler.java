@@ -34,7 +34,7 @@ public class KlineScheduler {
                 "price", "-1",  // 使用 -1 作為空K棒的標識
                 "tradeTime", Instant.now().getEpochSecond()
         ));
-        System.out.println("Sending empty kline updates: " + btcusdtKlineMessage);
+//        System.out.println("Sending empty kline updates: " + btcusdtKlineMessage);
 
         // 發送 BTCUSDT 和 ETHUSDT 的空K線更新數據到 Kafka
         kafkaTemplate.send("kline-updates", btcusdtKlineMessage);
