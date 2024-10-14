@@ -26,7 +26,6 @@ public class NewOrderMatchingService {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
     private final UserOrderProducer userOrderProducer;
-    private final OrderLoggerService orderLoggerService;
 
     @Autowired
     public NewOrderMatchingService(NewOrderbookService orderbookService,
@@ -34,14 +33,13 @@ public class NewOrderMatchingService {
                                    OrderBookDeltaProducer orderBookDeltaProducer,
                                    KafkaTemplate<String, String> kafkaTemplate,
                                    ObjectMapper objectMapper,
-                                   UserOrderProducer userOrderProducer, OrderLoggerService orderLoggerService) {
+                                   UserOrderProducer userOrderProducer) {
         this.orderbookService = orderbookService;
         this.snowflakeIdGenerator = snowflakeIdGenerator;
         this.orderBookDeltaProducer = orderBookDeltaProducer;
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
         this.userOrderProducer = userOrderProducer;
-        this.orderLoggerService = orderLoggerService;
     }
 
     public void handleNewOrder(Order order) throws JsonProcessingException {
@@ -70,9 +68,6 @@ public class NewOrderMatchingService {
         if (order.getOrderType() != Order.OrderType.MARKET) {
             userOrderProducer.sendOrderUpdate(order);
         }
-        // 在訂單處理完成後，記錄相關資訊與時間
-        Instant completionTime = Instant.now(); // 記錄處理完成的時間
-        orderLoggerService.logOrderCompletion(order, completionTime); // 調用記錄方法
     }
 
     // 撮合邏輯
