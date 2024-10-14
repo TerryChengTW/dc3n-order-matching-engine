@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class OrderConsumer {
 
@@ -20,16 +22,18 @@ public class OrderConsumer {
         this.newMatchingService = newMatchingService;
     }
 
-    // 消費新訂單
-    @KafkaListener(topics = "new_orders", groupId = "order_group")
-    public void consumeNewOrder(String orderJson) {
-        try {
-            // 將接收到的 JSON 訂單轉換為 Order 對象
-            Order order = objectMapper.readValue(orderJson, Order.class);
-            newMatchingService.handleNewOrder(order);
+    // 批量消費新訂單
+    @KafkaListener(topics = "new_orders", groupId = "order_group", containerFactory = "batchFactory")
+    public void consumeNewOrders(List<String> orderJsonList) {
+        for (String orderJson : orderJsonList) {
+            try {
+                // 將每筆 JSON 訂單轉換為 Order 對象
+                Order order = objectMapper.readValue(orderJson, Order.class);
+                newMatchingService.handleNewOrder(order);
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
